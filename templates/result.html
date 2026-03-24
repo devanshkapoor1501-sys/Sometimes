@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Prediction Result - {{ symbol }}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <a href="/" class="back-link">← Back</a>
+
+    <h1>{{ symbol }} Prediction Result</h1>
+    <div class="result-grid">
+      <div class="card">
+        <h3>Prediction</h3>
+        <p class="big {{ 'up' if prediction == 'Up' else 'down' }}">{{ prediction }}</p>
+        <p><strong>Confidence:</strong> {{ confidence }}%</p>
+        <p><strong>Latest Close:</strong> {{ latest_close }}</p>
+        <p><strong>Avg Sentiment Score:</strong> {{ sentiment_score }}</p>
+      </div>
+
+      <div class="card">
+        <h3>News Sentiment</h3>
+        {% if sentiment_rows %}
+          <ul class="news-list">
+            {% for row in sentiment_rows %}
+              <li>
+                <a href="{{ row.url }}" target="_blank">{{ row.title }}</a><br />
+                <small>{{ row.label }} ({{ row.score }}) • {{ row.source }}</small>
+              </li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <p>No live news available. Used neutral sentiment fallback (0.0).</p>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Stock Price Chart</h3>
+      <div id="priceChart"></div>
+    </div>
+  </div>
+
+  <script>
+    const fig = {{ chart_json | safe }};
+    Plotly.newPlot('priceChart', fig.data, fig.layout, {responsive: true});
+  </script>
+</body>
+</html>

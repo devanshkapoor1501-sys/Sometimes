@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Stock Predictor</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body>
+  <div class="container">
+    <h1>📈 Beginner Stock Prediction App</h1>
+    <p class="subtitle">Predict if a stock may go <strong>Up</strong> or <strong>Down</strong> using technical indicators + news sentiment.</p>
+
+    {% if error %}
+      <div class="error-box">{{ error }}</div>
+    {% endif %}
+
+    <form action="/predict" method="post" class="card">
+      <label for="symbol">Stock Symbol</label>
+      <input id="symbol" name="symbol" type="text" placeholder="e.g. AAPL, TSLA, RELIANCE.NS" required />
+      <button type="submit">Predict</button>
+    </form>
+
+    <div class="note card">
+      <h3>How this works</h3>
+      <ol>
+        <li>Downloads historical prices from Yahoo Finance</li>
+        <li>Computes simple indicators (price change + moving averages)</li>
+        <li>Reads recent news and scores sentiment with VADER</li>
+        <li>Runs a RandomForest model and predicts Up/Down</li>
+      </ol>
+      <p><strong>Disclaimer:</strong> Educational project only. Not financial advice.</p>
+    </div>
+  </div>
+</body>
+</html>
