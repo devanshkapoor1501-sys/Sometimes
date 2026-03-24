@@ -1,0 +1,10 @@
+flask==3.1.0
+pandas==2.2.3
+numpy==2.2.1
+yfinance==0.2.54
+scikit-learn==1.6.1
+python-dotenv==1.0.1
+requests==2.32.3
+nltk==3.9.1
+# Optional for FinBERT sentiment (VADER fallback works without these)
+transformers==4.48.0
