@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Home | Stock Predictor{% endblock %}
+
+{% block content %}
+<section class="hero card">
+  <h2>Predict Next-Day Stock Direction</h2>
+  <p>Search Yahoo Finance symbols like <strong>AAPL</strong>, <strong>TSLA</strong>, <strong>RELIANCE.NS</strong>, or <strong>TCS.NS</strong>.</p>
+
+  <form action="{{ url_for('predict') }}" method="post" class="predict-form" id="predictForm">
+    <label for="symbol">Stock Symbol</label>
+    <div class="form-row">
+      <input id="symbol" name="symbol" placeholder="e.g. AAPL or RELIANCE.NS" maxlength="15" required />
+      <button id="predictBtn" type="submit">Run Prediction</button>
+    </div>
+    <small class="muted">Tip: Use Yahoo suffix for Indian stocks (e.g., <code>.NS</code>).</small>
+  </form>
+</section>
+
+<section class="grid">
+  <div class="card stat-card">
+    <h3>1) Market Data</h3>
+    <p>Downloads historical OHLCV data via <strong>yfinance</strong>.</p>
+  </div>
+  <div class="card stat-card">
+    <h3>2) Sentiment</h3>
+    <p>Tries FinBERT first, falls back to VADER if unavailable.</p>
+  </div>
+  <div class="card stat-card">
+    <h3>3) Prediction</h3>
+    <p>Random Forest predicts <strong>UP</strong> / <strong>DOWN</strong> with confidence.</p>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  const form = document.getElementById('predictForm');
+  const btn = document.getElementById('predictBtn');
+  if (form && btn) {
+    form.addEventListener('submit', () => {
+      btn.textContent = 'Predicting...';
+      btn.disabled = true;
+    });
+  }
+</script>
+{% endblock %}
