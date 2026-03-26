@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard | College Canteen{% endblock %}
+
+{% block content %}
+<section class="page-hero">
+    <div>
+        <p class="eyebrow">Admin Dashboard</p>
+        <h1>Manage menu and canteen flow</h1>
+        <p class="hero-copy">Keep dishes updated, monitor order volume, and move to order tracking when students start placing requests.</p>
+    </div>
+    <div class="hero-actions">
+        <a class="button" href="{{ url_for('add_dish') }}">Add Dish</a>
+        <a class="button ghost-button" href="{{ url_for('admin_orders') }}">Manage Orders</a>
+    </div>
+</section>
+
+<section class="stat-grid section-space">
+    <div class="stat-card">
+        <span class="stat-label">Total Dishes</span>
+        <strong>{{ stats.total_dishes }}</strong>
+        <p>All items in the menu database</p>
+    </div>
+    <div class="stat-card">
+        <span class="stat-label">Available Now</span>
+        <strong>{{ stats.available_dishes }}</strong>
+        <p>Dishes currently visible to students</p>
+    </div>
+    <div class="stat-card">
+        <span class="stat-label">Orders</span>
+        <strong>{{ stats.total_orders }}</strong>
+        <p>Total orders placed so far</p>
+    </div>
+    <div class="stat-card">
+        <span class="stat-label">Pending</span>
+        <strong>{{ stats.pending_orders }}</strong>
+        <p>Orders still waiting to be prepared</p>
+    </div>
+</section>
+
+<section class="section-heading">
+    <div>
+        <p class="eyebrow">Menu Control</p>
+        <h2>Dish management</h2>
+    </div>
+</section>
+
+<section class="table-panel">
+    {% if dishes %}
+        <table class="dashboard-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Dish</th>
+                    <th>Category</th>
+                    <th>Price</th>
+                    <th>Image Path</th>
+                    <th>Availability</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for dish in dishes %}
+                    <tr>
+                        <td>{{ dish.dish_id }}</td>
+                        <td>{{ dish.name }}</td>
+                        <td>{{ dish.category }}</td>
+                        <td>Rs. {{ "%.2f"|format(dish.price) }}</td>
+                        <td class="muted-cell">{{ dish.image or "Not provided" }}</td>
+                        <td>
+                            <span class="badge {{ 'available-badge' if dish.availability else 'unavailable-badge' }}">
+                                {{ "Available" if dish.availability else "Unavailable" }}
+                            </span>
+                        </td>
+                        <td class="table-actions">
+                            <a class="text-link" href="{{ url_for('edit_dish', dish_id=dish.dish_id) }}">Edit</a>
+                            <form method="POST" action="{{ url_for('toggle_dish_availability', dish_id=dish.dish_id) }}">
+                                <button type="submit" class="secondary-button">Toggle</button>
+                            </form>
+                            <form method="POST" action="{{ url_for('delete_dish', dish_id=dish.dish_id) }}" onsubmit="return confirm('Delete this dish?');">
+                                <button type="submit" class="danger-button">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="empty-state">
+            <h3>No dishes found</h3>
+            <p>Add your first menu item to start serving students.</p>
+        </div>
+    {% endif %}
+</section>
+{% endblock %}

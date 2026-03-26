@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}Cart | College Canteen{% endblock %}
+
+{% block content %}
+<section class="page-hero">
+    <div>
+        <p class="eyebrow">Cart</p>
+        <h1>Review your items</h1>
+        <p class="hero-copy">Update quantities, remove dishes, and proceed to simulated payment when ready.</p>
+    </div>
+</section>
+
+{% if cart_data["items"] %}
+    <section class="cart-layout">
+        <div class="cart-list">
+            {% if cart_data["has_unavailable_items"] %}
+                <div class="inline-alert warning-alert">
+                    Some items in your cart are now out of stock. Remove them before proceeding to payment.
+                </div>
+            {% endif %}
+            {% for item in cart_data["items"] %}
+                <article class="cart-card">
+                    {% if item.image %}
+                        <img class="cart-thumb" src="{{ item.image }}" alt="{{ item.name }}">
+                    {% else %}
+                        <div class="cart-thumb placeholder-image">No Image</div>
+                    {% endif %}
+
+                    <div class="cart-card-body">
+                        <div class="cart-card-top">
+                            <div>
+                                <h2>{{ item.name }}</h2>
+                                <p>{{ item.category }}</p>
+                            </div>
+                            <span class="badge {{ 'available-badge' if item.availability else 'unavailable-badge' }}">
+                                {{ "Available" if item.availability else "Unavailable" }}
+                            </span>
+                        </div>
+
+                        <div class="cart-card-metrics">
+                            <span>Price: Rs. {{ "%.2f"|format(item.price) }}</span>
+                            <span>Subtotal: Rs. {{ "%.2f"|format(item.subtotal) }}</span>
+                        </div>
+
+                        <div class="cart-card-actions">
+                            <form class="cart-form" method="POST" action="{{ url_for('update_cart', dish_id=item.dish_id) }}">
+                                <input class="quantity-input" type="number" min="1" name="quantity" value="{{ item.quantity }}" required>
+                                <button type="submit" class="secondary-button">Update</button>
+                            </form>
+                            <form method="POST" action="{{ url_for('remove_from_cart', dish_id=item.dish_id) }}">
+                                <button type="submit" class="danger-button">Remove</button>
+                            </form>
+                        </div>
+                    </div>
+                </article>
+            {% endfor %}
+        </div>
+
+        <aside class="summary-card">
+            <h2>Cart Summary</h2>
+            <p><strong>Total Items:</strong> {{ cart_data["total_quantity"] }}</p>
+            <p><strong>Total Amount:</strong> Rs. {{ "%.2f"|format(cart_data["total_amount"]) }}</p>
+            <div class="summary-actions">
+                {% if cart_data["has_unavailable_items"] %}
+                    <span class="button disabled-button">Resolve Stock Issues</span>
+                {% else %}
+                    <a class="button" href="{{ url_for('payment') }}">Proceed to Payment</a>
+                {% endif %}
+                <a class="button ghost-button" href="{{ url_for('menu') }}">Continue Browsing</a>
+            </div>
+        </aside>
+    </section>
+{% else %}
+    <section class="empty-state">
+        <h3>Your cart is empty</h3>
+        <p>Add dishes from the menu to start your next order.</p>
+        <a class="button" href="{{ url_for('menu') }}">Browse Menu</a>
+    </section>
+{% endif %}
+{% endblock %}

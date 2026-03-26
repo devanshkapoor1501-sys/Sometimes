@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}College Canteen{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header class="site-header">
+        <div class="container nav-bar">
+            <a class="brand" href="{{ url_for('home') }}">
+                <span class="brand-mark">CC</span>
+                <span>College Canteen</span>
+            </a>
+
+            <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Toggle navigation">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+
+            <nav id="site-nav" class="site-nav">
+                <a class="{{ 'is-active' if request.endpoint == 'home' else '' }}" href="{{ url_for('home') }}">Home</a>
+                <a class="{{ 'is-active' if request.endpoint == 'menu' else '' }}" href="{{ url_for('menu') }}">Menu</a>
+
+                {% if current_user.user_id and current_user.role == "student" %}
+                    <a class="{{ 'is-active' if request.endpoint == 'cart' else '' }}" href="{{ url_for('cart') }}">
+                        Cart{% if cart_count %} ({{ cart_count }}){% endif %}
+                    </a>
+                    <a class="{{ 'is-active' if request.endpoint == 'my_orders' else '' }}" href="{{ url_for('my_orders') }}">My Orders</a>
+                {% endif %}
+
+                {% if current_user.user_id and current_user.role == "admin" %}
+                    <a class="{{ 'is-active' if request.endpoint in ['admin_dashboard', 'add_dish', 'edit_dish', 'admin_orders'] else '' }}" href="{{ url_for('admin_dashboard') }}">Admin Dashboard</a>
+                {% endif %}
+
+                {% if current_user.user_id %}
+                    <span class="nav-user">{{ current_user.name }} - {{ current_user.role|title }}</span>
+                    <a class="nav-pill" href="{{ url_for('logout') }}">Logout</a>
+                {% else %}
+                    <a class="{{ 'is-active' if request.endpoint == 'login' else '' }}" href="{{ url_for('login') }}">Login</a>
+                    <a class="nav-pill" href="{{ url_for('register') }}">Register</a>
+                {% endif %}
+            </nav>
+        </div>
+    </header>
+
+    <main class="page-shell">
+        <div class="container">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="flash-stack">
+                        {% for category, message in messages %}
+                            <div class="flash-message {{ category }}">{{ message }}</div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

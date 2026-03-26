@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Orders | College Canteen{% endblock %}
+
+{% block content %}
+<section class="page-hero">
+    <div>
+        <p class="eyebrow">Admin Orders</p>
+        <h1>Track every canteen order</h1>
+        <p class="hero-copy">Review student details, inspect ordered items, and update status from pending to collected.</p>
+    </div>
+    <a class="button" href="{{ url_for('admin_dashboard') }}">Back to Dashboard</a>
+</section>
+
+<section class="order-list">
+    {% if orders %}
+        {% for order in orders %}
+            <article class="order-card">
+                <div class="order-card-header">
+                    <div>
+                        <p class="order-meta">Order #{{ order.order_id }} - Token {{ order.token_number }}</p>
+                        <h2>{{ order.student_name }}</h2>
+                        <p class="order-meta">{{ order.student_email }} - {{ order.order_date.strftime('%d %b %Y, %I:%M %p') if order.order_date else '' }}</p>
+                    </div>
+                    <div class="status-group">
+                        <span class="badge paid-badge">{{ order.payment_status|title }}</span>
+                        <span class="badge status-badge">{{ order.order_status|title }}</span>
+                    </div>
+                </div>
+
+                <div class="order-grid">
+                    <div class="order-block">
+                        <h3>Items</h3>
+                        <ul class="order-items">
+                            {% for item in order["items"] %}
+                                <li>
+                                    <span>{{ item.name }} x {{ item.quantity }}</span>
+                                    <strong>Rs. {{ "%.2f"|format(item.subtotal) }}</strong>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+
+                    <div class="order-block">
+                        <h3>Summary</h3>
+                        <p><strong>Total:</strong> Rs. {{ "%.2f"|format(order.total_amount) }}</p>
+                        <form class="status-form" method="POST" action="{{ url_for('update_order_status', order_id=order.order_id) }}">
+                            <label for="status-{{ order.order_id }}">Update Order Status</label>
+                            <div class="status-form-row">
+                                <select id="status-{{ order.order_id }}" name="order_status">
+                                    {% for status in order_status_options %}
+                                        <option value="{{ status }}" {% if status == order.order_status %}selected{% endif %}>
+                                            {{ status|title }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                                <button type="submit">Save</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </article>
+        {% endfor %}
+    {% else %}
+        <div class="empty-state">
+            <h3>No orders yet</h3>
+            <p>New student orders will appear here as soon as checkout is completed.</p>
+        </div>
+    {% endif %}
+</section>
+{% endblock %}

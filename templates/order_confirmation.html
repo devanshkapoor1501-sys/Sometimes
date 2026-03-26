@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block title %}Order Confirmation | College Canteen{% endblock %}
+
+{% block content %}
+<section class="form-section">
+    <div class="payment-card confirmation-card">
+        <p class="eyebrow">Order Confirmed</p>
+        <h1>Token #{{ order_data["order"]["token_number"] }}</h1>
+        <p class="hero-copy">Your order has been placed successfully.</p>
+
+        <div class="confirmation-meta">
+            <p><strong>Order ID:</strong> {{ order_data["order"]["order_id"] }}</p>
+            <p><strong>Payment Status:</strong> {{ order_data["order"]["payment_status"]|title }}</p>
+            <p><strong>Order Status:</strong> {{ order_data["order"]["order_status"]|title }}</p>
+            <p><strong>Total Amount:</strong> Rs. {{ "%.2f"|format(order_data["order"]["total_amount"]) }}</p>
+        </div>
+
+        <div class="checkout-items">
+            {% for item in order_data["items"] %}
+                <div class="checkout-item">
+                    <span>{{ item.name }} x {{ item.quantity }}</span>
+                    <strong>Rs. {{ "%.2f"|format(item.subtotal) }}</strong>
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="summary-actions">
+            <a class="button" href="{{ url_for('my_orders') }}">View My Orders</a>
+            <a class="button ghost-button" href="{{ url_for('menu') }}">Back to Menu</a>
+        </div>
+    </div>
+</section>
+{% endblock %}

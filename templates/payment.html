@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}Payment | College Canteen{% endblock %}
+
+{% block content %}
+<section class="form-section">
+    <div class="payment-card">
+        <p class="eyebrow">Payment</p>
+        <h1>Confirm your payment</h1>
+        <p class="hero-copy">This is a simulated payment step. No real payment gateway is used.</p>
+
+        <div class="payment-summary">
+            <p><strong>Total Items:</strong> {{ cart_data["total_quantity"] }}</p>
+            <p><strong>Total Amount:</strong> Rs. {{ "%.2f"|format(cart_data["total_amount"]) }}</p>
+        </div>
+
+        <div class="checkout-items">
+            {% for item in cart_data["items"] %}
+                <div class="checkout-item">
+                    <span>{{ item.name }} x {{ item.quantity }}</span>
+                    <strong>Rs. {{ "%.2f"|format(item.subtotal) }}</strong>
+                </div>
+            {% endfor %}
+        </div>
+
+        <form class="payment-form" method="POST" action="{{ url_for('process_payment') }}">
+            <button type="submit">Pay Now</button>
+        </form>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}{{ error_code }} | College Canteen{% endblock %}
+
+{% block content %}
+<section class="form-section">
+    <div class="payment-card">
+        <p class="eyebrow">Error {{ error_code }}</p>
+        <h1>{{ error_title }}</h1>
+        <p class="hero-copy">{{ error_message }}</p>
+        <div class="summary-actions">
+            <a class="button" href="{{ url_for('home') }}">Go Home</a>
+            <a class="button ghost-button" href="{{ url_for('menu') }}">Browse Menu</a>
+        </div>
+    </div>
+</section>
+{% endblock %}

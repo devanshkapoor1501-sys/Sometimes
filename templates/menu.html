@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block title %}Menu | College Canteen{% endblock %}
+
+{% block content %}
+<section class="page-hero">
+    <div>
+        <p class="eyebrow">Menu</p>
+        <h1>Browse dishes</h1>
+        <p class="hero-copy">Search dishes, filter by category, and see live stock status before adding items to your cart.</p>
+    </div>
+    {% if current_user.role == "student" %}
+        <a class="button" href="{{ url_for('cart') }}">Open Cart</a>
+    {% elif not current_user.user_id %}
+        <a class="button" href="{{ url_for('login') }}">Login to order</a>
+    {% else %}
+        <a class="button" href="{{ url_for('admin_dashboard') }}">Open Dashboard</a>
+    {% endif %}
+</section>
+
+<section class="filter-panel">
+    <form class="filter-form" method="GET" action="{{ url_for('menu') }}">
+        <div class="filter-field">
+            <label for="q">Search</label>
+            <input id="q" name="q" type="search" value="{{ search_query }}" placeholder="Search dishes or categories">
+        </div>
+
+        <div class="filter-field">
+            <label for="category">Category</label>
+            <select id="category" name="category">
+                <option value="">All Categories</option>
+                {% for category in categories %}
+                    <option value="{{ category }}" {% if category == selected_category %}selected{% endif %}>{{ category }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="filter-actions">
+            <button type="submit">Apply Filters</button>
+            <a class="button ghost-button" href="{{ url_for('menu') }}">Reset</a>
+        </div>
+    </form>
+</section>
+
+<section class="menu-grid">
+    {% if dishes %}
+        {% for dish in dishes %}
+            <article class="menu-card">
+                {% if dish.image %}
+                    <img class="menu-image" src="{{ dish.image }}" alt="{{ dish.name }}">
+                {% else %}
+                    <div class="menu-image placeholder-image">No Image</div>
+                {% endif %}
+
+                <div class="menu-body">
+                    <div class="menu-topline">
+                        <span class="badge neutral-badge">{{ dish.category }}</span>
+                        <span class="badge {{ 'available-badge' if dish.availability else 'unavailable-badge' }}">
+                            {{ "Available" if dish.availability else "Out of Stock" }}
+                        </span>
+                    </div>
+                    <h3>{{ dish.name }}</h3>
+                    <p>Quick canteen pickup with live order tracking.</p>
+                    <div class="menu-footer">
+                        <strong>Rs. {{ "%.2f"|format(dish.price) }}</strong>
+                        {% if current_user.role == "student" %}
+                            {% if dish.availability %}
+                                <form method="POST" action="{{ url_for('add_to_cart', dish_id=dish.dish_id) }}">
+                                    <input type="hidden" name="next_url" value="{{ request.full_path if request.query_string else url_for('menu') }}">
+                                    <button type="submit">Add to Cart</button>
+                                </form>
+                            {% else %}
+                                <span class="sold-out-chip">Out of Stock</span>
+                            {% endif %}
+                        {% elif current_user.role == "admin" %}
+                            <span class="admin-note">Admin preview</span>
+                        {% else %}
+                            <a class="button ghost-button compact-button" href="{{ url_for('login') }}">Login</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </article>
+        {% endfor %}
+    {% else %}
+        <div class="empty-state">
+            <h3>No matching dishes found</h3>
+            <p>Try a different search term or remove the category filter.</p>
+        </div>
+    {% endif %}
+</section>
+{% endblock %}

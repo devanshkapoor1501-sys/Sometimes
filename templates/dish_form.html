@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}{{ form_title }} | College Canteen{% endblock %}
+
+{% block content %}
+<section class="form-section">
+    <form class="auth-form" method="POST" enctype="multipart/form-data">
+        <p class="eyebrow">Admin Menu Control</p>
+        <h1>{{ form_title }}</h1>
+        <p class="hero-copy">Upload a dish image, set pricing, and control whether the item is visible to students.</p>
+
+        <input type="hidden" name="existing_image" value="{{ dish.image if dish else '' }}">
+
+        <label for="name">Dish Name</label>
+        <input id="name" name="name" type="text" value="{{ dish.name if dish else '' }}" required>
+
+        <label for="category">Category</label>
+        <input id="category" name="category" type="text" value="{{ dish.category if dish else '' }}" required>
+
+        <label for="price">Price</label>
+        <input id="price" name="price" type="number" step="0.01" min="0.01" value="{{ dish.price if dish else '' }}" required>
+
+        <label for="image_file">Dish Image</label>
+        <input id="image_file" name="image_file" type="file" accept=".png,.jpg,.jpeg,.gif,.webp">
+        <p class="form-note">Optional. Supported formats: PNG, JPG, JPEG, GIF, WEBP. Max size: 2 MB.</p>
+
+        {% if dish and dish.image %}
+            <div class="image-preview-card">
+                <img class="preview-image" src="{{ dish.image }}" alt="Current dish image">
+                <p class="form-note">Current image will be kept unless you upload a new one.</p>
+            </div>
+        {% endif %}
+
+        <label class="checkbox-field" for="availability">
+            <input
+                id="availability"
+                name="availability"
+                type="checkbox"
+                {% if dish is none or dish.availability %}checked{% endif %}
+            >
+            Available for ordering
+        </label>
+
+        <button type="submit">{{ form_title }}</button>
+    </form>
+</section>
+{% endblock %}

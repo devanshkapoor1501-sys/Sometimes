@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Register | College Canteen{% endblock %}
+
+{% block content %}
+<section class="form-section">
+    <form class="auth-form" method="POST">
+        <p class="eyebrow">Create Student Account</p>
+        <h1>Register</h1>
+        <p class="hero-copy">Create an account to build carts, place orders, and monitor token updates.</p>
+
+        <label for="name">Full Name</label>
+        <input id="name" name="name" type="text" value="{{ form_data.name if form_data else '' }}" placeholder="Your name" required>
+
+        <label for="email">Email</label>
+        <input id="email" name="email" type="email" value="{{ form_data.email if form_data else '' }}" placeholder="student@college.edu" required>
+
+        <label for="password">Password</label>
+        <input id="password" name="password" type="password" placeholder="Create a password" required>
+        <p class="form-note">Use at least 8 characters for your password.</p>
+
+        <button type="submit">Register</button>
+    </form>
+</section>
+{% endblock %}

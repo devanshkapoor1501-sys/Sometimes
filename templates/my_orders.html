@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}My Orders | College Canteen{% endblock %}
+
+{% block content %}
+<section class="page-hero">
+    <div>
+        <p class="eyebrow">My Orders</p>
+        <h1>Track your canteen orders</h1>
+        <p class="hero-copy">Follow token numbers, review what you ordered, and check the latest preparation status.</p>
+    </div>
+    <a class="button" href="{{ url_for('menu') }}">Order More</a>
+</section>
+
+<section class="order-list">
+    {% if orders %}
+        {% for order in orders %}
+            <article class="order-card">
+                <div class="order-card-header">
+                    <div>
+                        <p class="order-meta">Order #{{ order.order_id }}</p>
+                        <h2>Token {{ order.token_number }}</h2>
+                        <p class="order-meta">{{ order.order_date.strftime('%d %b %Y, %I:%M %p') if order.order_date else '' }}</p>
+                    </div>
+                    <div class="status-group">
+                        <span class="badge paid-badge">{{ order.payment_status|title }}</span>
+                        <span class="badge status-badge">{{ order.order_status|title }}</span>
+                    </div>
+                </div>
+
+                <div class="order-grid">
+                    <div class="order-block">
+                        <h3>Items</h3>
+                        <ul class="order-items">
+                            {% for item in order["items"] %}
+                                <li>
+                                    <span>{{ item.name }} x {{ item.quantity }}</span>
+                                    <strong>Rs. {{ "%.2f"|format(item.subtotal) }}</strong>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+
+                    <div class="order-block">
+                        <h3>Summary</h3>
+                        <p><strong>Total Amount:</strong> Rs. {{ "%.2f"|format(order.total_amount) }}</p>
+                        <p><strong>Payment Status:</strong> {{ order.payment_status|title }}</p>
+                        <p><strong>Order Status:</strong> {{ order.order_status|title }}</p>
+                    </div>
+                </div>
+            </article>
+        {% endfor %}
+    {% else %}
+        <div class="empty-state">
+            <h3>No orders placed yet</h3>
+            <p>Your completed checkouts will appear here with token updates.</p>
+        </div>
+    {% endif %}
+</section>
+{% endblock %}

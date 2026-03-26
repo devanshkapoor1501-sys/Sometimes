@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block title %}Home | College Canteen{% endblock %}
+
+{% block content %}
+<section class="hero-banner">
+    <div class="hero-copy-block">
+        <p class="eyebrow">Campus dining, simplified</p>
+        <h1>Order meals, track tokens, and manage the canteen from one dashboard.</h1>
+        <p class="hero-copy">
+            Students can browse the live menu, manage carts, and follow order status in real time.
+            Admins can control dishes, track tokens, and move orders from pending to collected.
+        </p>
+        <div class="hero-actions">
+            <a class="button" href="{{ url_for('menu') }}">Browse Menu</a>
+            {% if current_user.role == "student" %}
+                <a class="button ghost-button" href="{{ url_for('my_orders') }}">View My Orders</a>
+            {% elif current_user.role == "admin" %}
+                <a class="button ghost-button" href="{{ url_for('admin_dashboard') }}">Open Dashboard</a>
+            {% else %}
+                <a class="button ghost-button" href="{{ url_for('register') }}">Create Account</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="hero-panel">
+        <div class="stat-grid">
+            <div class="stat-card">
+                <span class="stat-label">Live Menu</span>
+                <strong>{{ available_count }}</strong>
+                <p>Dishes currently available to students</p>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">Token Tracking</span>
+                <strong>Real Time</strong>
+                <p>Students can track updates from the order page</p>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">Admin Tools</span>
+                <strong>Menu + Orders</strong>
+                <p>Dish control and order status management in one place</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section-heading">
+    <div>
+        <p class="eyebrow">Featured Today</p>
+        <h2>Fresh picks from the canteen</h2>
+    </div>
+    <a class="text-link" href="{{ url_for('menu') }}">See full menu</a>
+</section>
+
+<section class="menu-grid">
+    {% if featured_dishes %}
+        {% for dish in featured_dishes %}
+            <article class="menu-card">
+                {% if dish.image %}
+                    <img class="menu-image" src="{{ dish.image }}" alt="{{ dish.name }}">
+                {% else %}
+                    <div class="menu-image placeholder-image">No Image</div>
+                {% endif %}
+
+                <div class="menu-body">
+                    <div class="menu-topline">
+                        <span class="badge neutral-badge">{{ dish.category }}</span>
+                        <span class="badge available-badge">Available</span>
+                    </div>
+                    <h3>{{ dish.name }}</h3>
+                    <p>Freshly prepared for quick campus pickup.</p>
+                    <div class="menu-footer">
+                        <strong>Rs. {{ "%.2f"|format(dish.price) }}</strong>
+                        {% if current_user.role == "student" %}
+                            <form method="POST" action="{{ url_for('add_to_cart', dish_id=dish.dish_id) }}">
+                                <input type="hidden" name="next_url" value="{{ url_for('home') }}">
+                                <button type="submit">Add to Cart</button>
+                            </form>
+                        {% elif current_user.role == "admin" %}
+                            <span class="admin-note">Admin preview</span>
+                        {% else %}
+                            <a class="button ghost-button compact-button" href="{{ url_for('login') }}">Login to order</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </article>
+        {% endfor %}
+    {% else %}
+        <div class="empty-state">
+            <h3>No dishes available yet</h3>
+            <p>Add menu items from the admin dashboard to populate the homepage.</p>
+        </div>
+    {% endif %}
+</section>
+{% endblock %}
