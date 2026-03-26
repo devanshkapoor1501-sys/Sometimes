@@ -3,48 +3,118 @@
 {% block title %}Home | College Canteen{% endblock %}
 
 {% block content %}
-<section class="hero-banner">
+<section class="hero-banner home-hero">
     <div class="hero-copy-block">
         <p class="eyebrow">Campus dining, simplified</p>
-        <h1>Order meals, track tokens, and manage the canteen from one dashboard.</h1>
-        <p class="hero-copy">
-            Students can browse the live menu, manage carts, and follow order status in real time.
-            Admins can control dishes, track tokens, and move orders from pending to collected.
+        <h1>Skip the line and pick up only when your token is ready.</h1>
+        <p class="hero-copy hero-copy-strong">
+            The canteen site brings menu browsing, token tracking, and admin-side order control into one clean workflow.
+            Students order faster. Staff manage flow better.
         </p>
+
+        <div class="hero-chip-row">
+            <span class="info-chip">Live Menu</span>
+            <span class="info-chip">Token Updates</span>
+            <span class="info-chip">Admin Control</span>
+        </div>
+
         <div class="hero-actions">
             <a class="button" href="{{ url_for('menu') }}">Browse Menu</a>
             {% if current_user.role == "student" %}
-                <a class="button ghost-button" href="{{ url_for('my_orders') }}">View My Orders</a>
+                <a class="button ghost-button" href="{{ url_for('my_orders') }}">Track My Orders</a>
             {% elif current_user.role == "admin" %}
                 <a class="button ghost-button" href="{{ url_for('admin_dashboard') }}">Open Dashboard</a>
             {% else %}
                 <a class="button ghost-button" href="{{ url_for('register') }}">Create Account</a>
             {% endif %}
         </div>
+
+        <div class="hero-kpis">
+            <div class="hero-kpi">
+                <span>Available Dishes</span>
+                <strong>{{ available_count }}</strong>
+            </div>
+            <div class="hero-kpi">
+                <span>Order Flow</span>
+                <strong>Pending to Collected</strong>
+            </div>
+        </div>
     </div>
 
-    <div class="hero-panel">
-        <div class="stat-grid">
-            <div class="stat-card">
-                <span class="stat-label">Live Menu</span>
-                <strong>{{ available_count }}</strong>
-                <p>Dishes currently available to students</p>
+    <div class="hero-showcase">
+        <div class="showcase-top">
+            <div>
+                <p class="eyebrow">Service Board</p>
+                <h2>Designed for fast campus rush hours</h2>
             </div>
-            <div class="stat-card">
-                <span class="stat-label">Token Tracking</span>
-                <strong>Real Time</strong>
-                <p>Students can track updates from the order page</p>
+            <span class="showcase-pill">Open Today</span>
+        </div>
+
+        <div class="showcase-grid">
+            <article class="showcase-stat">
+                <span class="stat-label">Student Side</span>
+                <strong>Browse + Cart</strong>
+                <p>Students can search, filter, order, and track without waiting in line.</p>
+            </article>
+            <article class="showcase-stat">
+                <span class="stat-label">Kitchen Flow</span>
+                <strong>Token Ready</strong>
+                <p>Orders move from pending to collected with visible status changes.</p>
+            </article>
+        </div>
+
+        <div class="showcase-menu">
+            <div class="showcase-menu-header">
+                <div>
+                    <p class="eyebrow">Featured Picks</p>
+                    <h3>What students can order right now</h3>
+                </div>
+                <a class="text-link" href="{{ url_for('menu') }}">Full Menu</a>
             </div>
-            <div class="stat-card">
-                <span class="stat-label">Admin Tools</span>
-                <strong>Menu + Orders</strong>
-                <p>Dish control and order status management in one place</p>
-            </div>
+
+            {% if featured_dishes %}
+                <div class="showcase-items">
+                    {% for dish in featured_dishes %}
+                        <article class="showcase-item">
+                            <div>
+                                <strong>{{ dish.name }}</strong>
+                                <p>{{ dish.category }}</p>
+                            </div>
+                            <div class="showcase-item-meta">
+                                <span class="badge available-badge">Fresh</span>
+                                <strong>Rs. {{ "%.2f"|format(dish.price) }}</strong>
+                            </div>
+                        </article>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="showcase-empty">
+                    <p>No featured dishes yet. Add menu items to bring the homepage to life.</p>
+                </div>
+            {% endif %}
         </div>
     </div>
 </section>
 
-<section class="section-heading">
+<section class="value-strip">
+    <article class="value-card">
+        <p class="eyebrow">01</p>
+        <h3>Find food faster</h3>
+        <p>Students can search the menu, filter categories, and avoid dead-end ordering on out-of-stock dishes.</p>
+    </article>
+    <article class="value-card">
+        <p class="eyebrow">02</p>
+        <h3>Track in real time</h3>
+        <p>Each order gets a token number and moves through clear stages that students can see immediately.</p>
+    </article>
+    <article class="value-card">
+        <p class="eyebrow">03</p>
+        <h3>Control the rush</h3>
+        <p>Admins can update menu availability, manage incoming orders, and keep the entire flow organized.</p>
+    </article>
+</section>
+
+<section class="section-heading home-section-heading">
     <div>
         <p class="eyebrow">Featured Today</p>
         <h2>Fresh picks from the canteen</h2>
@@ -93,3 +163,4 @@
     {% endif %}
 </section>
 {% endblock %}
+
